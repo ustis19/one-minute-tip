@@ -3,7 +3,6 @@
 import React, { useState, useEffect, FormEvent } from "react";
 import { motion } from "framer-motion";
 
-// Карточки
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <div className={`rounded-xl border bg-white p-4 shadow ${className}`}>{children}</div>;
 }
@@ -48,7 +47,8 @@ type Tip = {
 const tips: Tip[] = [
   {
     title: "💧 Пей больше воды",
-    content: "Даже лёгкое обезвоживание снижает концентрацию и работоспособность. Поставь стакан воды рядом с рабочим местом!",
+    content:
+      "Даже лёгкое обезвоживание снижает концентрацию и работоспособность. Поставь стакан воды рядом с рабочим местом!",
     category: "здоровье",
     date: "19.05.2025",
   },
@@ -60,7 +60,8 @@ const tips: Tip[] = [
   },
   {
     title: "💡 Быстрый способ снять стресс",
-    content: "Глубокий вдох на 4 секунды, задержка дыхания на 4, выдох на 4. Повтори 3 раза — и почувствуешь эффект.",
+    content:
+      "Глубокий вдох на 4 секунды, задержка дыхания на 4, выдох на 4. Повтори 3 раза — и почувствуешь эффект.",
     category: "психология",
     date: "17.05.2025",
   },
@@ -126,6 +127,7 @@ export default function Home() {
         >
           🕐 Одна минута полезности
         </motion.h1>
+
         <nav className="flex justify-center gap-4 text-blue-600 underline">
           <a href="#tip">Совет дня</a>
           <a href="#archive">Архив</a>
@@ -133,7 +135,7 @@ export default function Home() {
           <a href="#subscribe">Подписка</a>
         </nav>
 
-        <div className="flex justify-center mt-4">
+        <div className="mt-4 flex justify-center">
           <Button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
             Переключить тему
           </Button>
