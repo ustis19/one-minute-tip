@@ -23,17 +23,82 @@ function Button({ children, className = "", ...props }: React.ButtonHTMLAttribut
 }
 
 function AdBlock() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+
+  const toggleModal = () => setIsModalOpen(!isModalOpen);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    alert(`Спасибо за ваше сообщение!\nИмя: ${formData.name}\nEmail: ${formData.email}\nСообщение: ${formData.message}`);
+    setFormData({ name: "", email: "", message: "" });
+    setIsModalOpen(false);
+  };
+
   return (
-    <div className="max-w-xl my-8 p-4 border rounded bg-yellow-50 text-center text-yellow-800 shadow-md">
-      <h3 className="font-bold mb-2">Реклама</h3>
-      <p>🔥 Здесь может быть ваша реклама! Свяжитесь с нами для размещения.</p>
-      <a
-        href="mailto:ads@example.com"
-        className="inline-block mt-3 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-white rounded"
-      >
-        Связаться
-      </a>
-    </div>
+    <>
+      <div className="max-w-xl my-8 p-4 border rounded bg-yellow-50 text-center text-yellow-800 shadow-md">
+        <h3 className="font-bold mb-2">Реклама</h3>
+        <p>🔥 Здесь может быть ваша реклама! Свяжитесь с нами для размещения.</p>
+        <button
+          onClick={toggleModal}
+          className="inline-block mt-3 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-white rounded"
+        >
+          Связаться
+        </button>
+      </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-lg relative">
+            <button
+              onClick={toggleModal}
+              className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 text-xl font-bold"
+              aria-label="Закрыть"
+            >
+              ×
+            </button>
+            <h2 className="text-xl font-semibold mb-4">Свяжитесь с нами</h2>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <input
+                type="text"
+                name="name"
+                placeholder="Ваше имя"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="p-2 border rounded"
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="Ваш email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="p-2 border rounded"
+              />
+              <textarea
+                name="message"
+                placeholder="Сообщение"
+                value={formData.message}
+                onChange={handleChange}
+                required
+                className="p-2 border rounded resize-none"
+                rows={4}
+              />
+              <button type="submit" className="bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded">
+                Отправить
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
