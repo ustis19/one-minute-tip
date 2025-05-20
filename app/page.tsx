@@ -40,23 +40,36 @@ function AdBlock() {
 
 export default function Home() {
   const [tip, setTip] = useState<Tip | null>(null);
-
-  // Определение фонового изображения по дате
-  const today = new Date();
-  const hashSuffix = today.getDate() + today.getMonth() * 31;
-  const bgImage = `/backgrounds/bg_${hashSuffix % 100}.jpg`;
+  const [sortedTips, setSortedTips] = useState<Tip[]>([]);
 
   useEffect(() => {
-    const todayStr = today.toLocaleDateString("ru-RU");
-    const todayTip = tips.find((t) => t.date === todayStr);
-    setTip(todayTip || tips[0]);
+    // Сортируем советы по дате
+    const sorted = [...tips].sort((a, b) => {
+      const [dayA, monthA, yearA] = a.date.split('.').map(Number);
+      const [dayB, monthB, yearB] = b.date.split('.').map(Number);
+      const dateA = new Date(yearA, monthA - 1, dayA);
+      const dateB = new Date(yearB, monthB - 1, dayB);
+      return dateA.getTime() - dateB.getTime();
+    });
+
+    setSortedTips(sorted);
+
+    // Находим совет на сегодня
+    const todayStr = new Date().toLocaleDateString("ru-RU");
+    const todayTip = sorted.find(t => t.date === todayStr);
+
+    setTip(todayTip || sorted[0]);
   }, []);
 
+  const tipIndex = tip ? sortedTips.findIndex(t => t.date === tip.date) : 0;
+  const bgImage = `/images/tips/tip_${String(tipIndex + 1).padStart(2, "0")}.jpg`;
+
   const handleShowNextTip = () => {
-    if (!tip) return;
-    const currentIndex = tips.findIndex((t) => t.date === tip.date);
-    const nextIndex = (currentIndex + 1) % tips.length;
-    setTip(tips[nextIndex]);
+    if (!tip || sortedTips.length === 0) return;
+
+    const currentIndex = sortedTips.findIndex(t => t.date === tip.date);
+    const nextIndex = (currentIndex + 1) % sortedTips.length;
+    setTip(sortedTips[nextIndex]);
   };
 
   const handleTelegramSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -102,7 +115,7 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen p-6 bg-white text-gray-800 transition-colors duration-300"
+      className="min-h-screen p-6 text-gray-800 transition-colors duration-300"
       style={{
         backgroundImage: `url('${bgImage}')`,
         backgroundSize: "cover",
@@ -162,7 +175,7 @@ export default function Home() {
         <section id="archive" className="mt-16 max-w-2xl w-full">
           <h2 className="text-2xl font-bold mb-4">🗂 Архив советов</h2>
           <ul className="space-y-2">
-            {tips.map((t, index) => (
+            {sortedTips.map((t, index) => (
               <li key={index} className="border-b pb-2">
                 <strong>{t.title}</strong> — <em>{t.category}</em> ({t.date})
               </li>
