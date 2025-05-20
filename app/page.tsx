@@ -42,30 +42,44 @@ export default function Home() {
   const [tip, setTip] = useState<Tip | null>(null);
 
   useEffect(() => {
-    console.log("Загружено советов:", tips.length);
-    console.log("Даты советов:", tips.map(t => t.date));
-
     const today = new Date().toLocaleDateString("ru-RU");
     const todayTip = tips.find((t) => t.date === today);
-    setTip(todayTip || tips[Math.floor(Math.random() * tips.length)]);
+    setTip(todayTip || tips[0]);
   }, []);
 
-  const handleShowAnotherTip = () => {
+  const handleShowNextTip = () => {
     if (!tip) return;
 
-    const filteredTips = tips.filter((t) => t.title !== tip.title);
-    const randomTip = filteredTips[Math.floor(Math.random() * filteredTips.length)];
-    setTip(randomTip);
+    const currentIndex = tips.findIndex((t) => t.date === tip.date);
+    const nextIndex = (currentIndex + 1) % tips.length;
+    setTip(tips[nextIndex]);
   };
 
   const handleTelegramSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const email = formData.get("telegram_email");
+    let username = (formData.get("telegram_user") as string).trim();
+
+    if (!username) {
+      alert("Пожалуйста, введите ваш Telegram username");
+      return;
+    }
+
+    // Добавим @ если не указан
+    if (!username.startsWith("@")) {
+      username = "@" + username;
+    }
+
+    // Проверка username: только буквы, цифры, _, длина 5–32 символа
+    const isValid = /^@?[a-zA-Z0-9_]{5,32}$/.test(username);
+    if (!isValid) {
+      alert("Некорректный username. Допустимы только буквы, цифры и подчёркивания (5–32 символа).");
+      return;
+    }
 
     const token = "YOUR_TELEGRAM_BOT_TOKEN";
     const chatId = "YOUR_TELEGRAM_CHAT_ID";
-    const text = `Новая подписка: ${email}`;
+    const text = `Новая подписка в Telegram: ${username}`;
 
     try {
       const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -137,10 +151,10 @@ export default function Home() {
 
         <Button
           className="mt-6"
-          title="Показать случайный совет"
-          onClick={handleShowAnotherTip}
+          title="Показать следующий совет"
+          onClick={handleShowNextTip}
         >
-          🔄 Показать другой совет
+          🔄 Показать следующий совет
         </Button>
 
         <section id="archive" className="mt-16 max-w-2xl w-full">
@@ -187,13 +201,13 @@ export default function Home() {
           <div>
             <h3 className="font-semibold mb-2">Через Telegram</h3>
             <form onSubmit={handleTelegramSubmit} className="flex flex-col gap-4">
-              <label htmlFor="telegram_email" className="text-left font-medium">Email</label>
+              <label htmlFor="telegram_user" className="text-left font-medium">Telegram @username</label>
               <input
-                type="email"
-                name="telegram_email"
-                id="telegram_email"
-                placeholder="Ваш email"
-                pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                type="text"
+                name="telegram_user"
+                id="telegram_user"
+                placeholder="@ваш_ник_в_telegram"
+                pattern="^@?[a-zA-Z0-9_]{5,32}$"
                 className="p-2 border rounded"
                 required
               />
