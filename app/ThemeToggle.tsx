@@ -7,7 +7,8 @@ export default function ThemeToggle() {
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
-    if (savedTheme) setTheme(savedTheme);
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setTheme(savedTheme || (prefersDark ? "dark" : "light"));
   }, []);
 
   useEffect(() => {
@@ -19,16 +20,11 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-      style={{
-        position: "fixed",
-        top: 10,
-        right: 10,
-        padding: "0.5rem 1rem",
-        cursor: "pointer",
-        zIndex: 9999,
-      }}
+      aria-label="Переключить тему"
+      title="Переключить тему"
+      className="fixed top-4 right-4 z-50 text-2xl p-2 bg-white/70 dark:bg-black/40 rounded-full shadow hover:scale-110 transition"
     >
-      Переключить тему
+      {theme === "light" ? "🌙" : "🌞"}
     </button>
   );
 }
