@@ -68,6 +68,47 @@ export default function Home() {
 
   const toggleArchive = () => setIsArchiveOpen(prev => !prev);
 
+  const handleTelegramSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    let username = (formData.get("telegram_user") as string).trim();
+
+    if (!username) {
+      alert("Пожалуйста, введите ваш Telegram username");
+      return;
+    }
+
+    if (!username.startsWith("@")) {
+      username = "@" + username;
+    }
+
+    const isValid = /^@?[a-zA-Z0-9_]{5,32}$/.test(username);
+    if (!isValid) {
+      alert("Некорректный username. Допустимы только буквы, цифры и подчёркивания (5–32 символа).");
+      return;
+    }
+
+    const token = "YOUR_TELEGRAM_BOT_TOKEN";
+    const chatId = "YOUR_TELEGRAM_CHAT_ID";
+    const text = `Новая подписка в Telegram: ${username}`;
+
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: chatId, text }),
+      });
+
+      if (!res.ok) throw new Error("Ошибка при отправке сообщения");
+
+      alert("Спасибо за подписку через Telegram!");
+      e.currentTarget.reset();
+    } catch (err) {
+      console.error(err);
+      alert("Не удалось отправить сообщение. Попробуйте позже.");
+    }
+  };
+
   return (
     <div
       className="min-h-screen p-6 text-gray-800 transition-colors duration-300"
