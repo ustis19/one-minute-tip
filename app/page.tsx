@@ -69,17 +69,12 @@ const tips: Tip[] = [
 
 export default function Home() {
   const [tip, setTip] = useState<Tip | null>(null);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
     const today = new Date().toLocaleDateString("ru-RU");
     const todayTip = tips.find((t) => t.date === today);
     setTip(todayTip || tips[Math.floor(Math.random() * tips.length)]);
   }, []);
-
-  useEffect(() => {
-    document.body.className = theme;
-  }, [theme]);
 
   const handleTelegramSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -109,9 +104,7 @@ export default function Home() {
 
   return (
     <div
-      className={`min-h-screen p-6 transition-colors duration-300 ${
-        theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-gray-800"
-      }`}
+      className="min-h-screen p-6 bg-white text-gray-800 transition-colors duration-300"
       style={{
         backgroundImage: "url('/background.jpg')",
         backgroundSize: "cover",
@@ -134,12 +127,6 @@ export default function Home() {
           <a href="#about">О проекте</a>
           <a href="#subscribe">Подписка</a>
         </nav>
-
-        <div className="mt-4 flex justify-center">
-          <Button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
-            Переключить тему
-          </Button>
-        </div>
       </header>
 
       <main className="flex flex-col items-center justify-center">
@@ -190,7 +177,7 @@ export default function Home() {
 
         <section id="about" className="mt-16 max-w-2xl w-full text-center">
           <h2 className="text-2xl font-bold mb-4">🤔 О проекте</h2>
-          <p className="text-gray-700 dark:text-gray-300">
+          <p className="text-gray-700">
             Этот сайт создан для тех, кто любит узнавать новое, но не хочет тратить много времени. Каждый день — новый короткий совет, который можно прочитать за 1 минуту.
           </p>
         </section>
