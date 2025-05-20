@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, FormEvent } from "react";
 import { motion } from "framer-motion";
-import { tips, Tip } from "../data/tips"; // ← импорт из внешнего файла
+import { tips, Tip } from "../data/tips.ts"; // ← импорт из внешнего файла
 
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <div className={`rounded-xl border bg-white p-4 shadow ${className}`}>{children}</div>;
