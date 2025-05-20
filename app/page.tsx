@@ -41,15 +41,19 @@ function AdBlock() {
 export default function Home() {
   const [tip, setTip] = useState<Tip | null>(null);
 
+  // Определение фонового изображения по дате
+  const today = new Date();
+  const hashSuffix = today.getDate() + today.getMonth() * 31;
+  const bgImage = `/backgrounds/bg_${hashSuffix % 100}.jpg`;
+
   useEffect(() => {
-    const today = new Date().toLocaleDateString("ru-RU");
-    const todayTip = tips.find((t) => t.date === today);
+    const todayStr = today.toLocaleDateString("ru-RU");
+    const todayTip = tips.find((t) => t.date === todayStr);
     setTip(todayTip || tips[0]);
   }, []);
 
   const handleShowNextTip = () => {
     if (!tip) return;
-
     const currentIndex = tips.findIndex((t) => t.date === tip.date);
     const nextIndex = (currentIndex + 1) % tips.length;
     setTip(tips[nextIndex]);
@@ -65,12 +69,10 @@ export default function Home() {
       return;
     }
 
-    // Добавим @ если не указан
     if (!username.startsWith("@")) {
       username = "@" + username;
     }
 
-    // Проверка username: только буквы, цифры, _, длина 5–32 символа
     const isValid = /^@?[a-zA-Z0-9_]{5,32}$/.test(username);
     if (!isValid) {
       alert("Некорректный username. Допустимы только буквы, цифры и подчёркивания (5–32 символа).");
@@ -102,7 +104,7 @@ export default function Home() {
     <div
       className="min-h-screen p-6 bg-white text-gray-800 transition-colors duration-300"
       style={{
-        backgroundImage: "url('/background.jpg')",
+        backgroundImage: `url('${bgImage}')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
