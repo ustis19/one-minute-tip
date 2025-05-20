@@ -42,6 +42,9 @@ export default function Home() {
   const [tip, setTip] = useState<Tip | null>(null);
 
   useEffect(() => {
+    console.log("Загружено советов:", tips.length);
+    console.log("Даты советов:", tips.map(t => t.date));
+
     const today = new Date().toLocaleDateString("ru-RU");
     const todayTip = tips.find((t) => t.date === today);
     setTip(todayTip || tips[Math.floor(Math.random() * tips.length)]);
@@ -49,11 +52,10 @@ export default function Home() {
 
   const handleShowAnotherTip = () => {
     if (!tip) return;
-    let newTip: Tip | null = null;
-    do {
-      newTip = tips[Math.floor(Math.random() * tips.length)];
-    } while (newTip.title === tip.title);
-    setTip(newTip);
+
+    const filteredTips = tips.filter((t) => t.title !== tip.title);
+    const randomTip = filteredTips[Math.floor(Math.random() * filteredTips.length)];
+    setTip(randomTip);
   };
 
   const handleTelegramSubmit = async (e: FormEvent<HTMLFormElement>) => {
