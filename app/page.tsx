@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, FormEvent } from "react";
 import { motion } from "framer-motion";
+import { tips, Tip } from "../data/tips"; // ← импорт из внешнего файла
 
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <div className={`rounded-xl border bg-white p-4 shadow ${className}`}>{children}</div>;
@@ -36,36 +37,6 @@ function AdBlock() {
     </div>
   );
 }
-
-type Tip = {
-  title: string;
-  content: string;
-  category: string;
-  date: string;
-};
-
-const tips: Tip[] = [
-  {
-    title: "💧 Пей больше воды",
-    content:
-      "Даже лёгкое обезвоживание снижает концентрацию и работоспособность. Поставь стакан воды рядом с рабочим местом!",
-    category: "здоровье",
-    date: "19.05.2025",
-  },
-  {
-    title: "📚 Метод Помидора",
-    content: "Работай 25 минут, отдыхай 5. Такой цикл повышает продуктивность и снижает выгорание.",
-    category: "продуктивность",
-    date: "18.05.2025",
-  },
-  {
-    title: "💡 Быстрый способ снять стресс",
-    content:
-      "Глубокий вдох на 4 секунды, задержка дыхания на 4, выдох на 4. Повтори 3 раза — и почувствуешь эффект.",
-    category: "психология",
-    date: "17.05.2025",
-  },
-];
 
 export default function Home() {
   const [tip, setTip] = useState<Tip | null>(null);
