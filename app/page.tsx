@@ -5,11 +5,11 @@ import { motion } from "framer-motion";
 import { tips, Tip } from "../data/tips";
 
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`rounded-xl border bg-white p-4 shadow ${className}`}>{children}</div>;
+  return <div className={`rounded-xl border bg-white/20 p-4 shadow ${className}`}>{children}</div>;
 }
 
 function CardContent({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`p-2 ${className}`}>{children}</div>;
+  return <div className={`p-6 ${className}`}>{children}</div>;
 }
 
 function Button({ children, className = "", ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
@@ -111,7 +111,7 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen p-6 text-gray-800 transition-colors duration-300"
+      className="min-h-screen p-6 text-gray-100 transition-colors duration-300 relative"
       style={{
         backgroundImage: `url('${bgImage}')`,
         backgroundSize: "cover",
@@ -119,24 +119,31 @@ export default function Home() {
         backgroundAttachment: "fixed",
       }}
     >
-      <header className="mb-10 text-center">
-        <motion.h1
-          className="text-3xl md:text-5xl font-bold mb-4"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          🕐 Одна минута полезности
-        </motion.h1>
+      {/* Затемнённый оверлей */}
+      <div
+        className="absolute inset-0 bg-black opacity-60 pointer-events-none"
+        aria-hidden="true"
+      />
 
-        <nav className="flex justify-center gap-4 text-blue-600 underline">
-          <a href="#tip">Совет дня</a>
-          <a href="#archive">Архив</a>
-          <a href="#about">О проекте</a>
-          <a href="#subscribe">Подписка</a>
-        </nav>
-      </header>
+      {/* Контент поверх оверлея */}
+      <main className="relative flex flex-col items-center justify-center">
+        <header className="mb-10 text-center z-10 relative">
+          <motion.h1
+            className="text-3xl md:text-5xl font-bold mb-4"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            🕐 Одна минута полезности
+          </motion.h1>
 
-      <main className="flex flex-col items-center justify-center">
+          <nav className="flex justify-center gap-4 text-blue-400 underline">
+            <a href="#tip">Совет дня</a>
+            <a href="#archive">Архив</a>
+            <a href="#about">О проекте</a>
+            <a href="#subscribe">Подписка</a>
+          </nav>
+        </header>
+
         {tip && (
           <>
             <motion.div
@@ -144,12 +151,13 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
+              className="z-10 relative"
             >
-              <Card className="max-w-xl text-center">
-                <CardContent className="p-6">
+              <Card className="max-w-xl text-center bg-white/20">
+                <CardContent className="p-6 text-white">
                   <h2 className="text-xl font-semibold mb-2">{tip.title}</h2>
                   <p className="text-base mb-4">{tip.content}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-300">
                     Тема: {tip.category} | {tip.date}
                   </p>
                 </CardContent>
@@ -161,17 +169,20 @@ export default function Home() {
         )}
 
         <Button
-          className="mt-6"
+          className="mt-6 z-10 relative"
           title="Показать следующий совет"
           onClick={handleShowNextTip}
         >
           🔄 Показать следующий совет
         </Button>
 
-        <section id="archive" className="mt-16 max-w-2xl w-full">
+        <section
+          id="archive"
+          className="mt-16 max-w-2xl w-full z-10 relative"
+        >
           <div
             onClick={toggleArchive}
-            className="flex cursor-pointer items-center justify-between border-b border-gray-300 pb-2"
+            className="flex cursor-pointer items-center justify-between border-b border-gray-400 pb-2"
             aria-expanded={isArchiveOpen}
             role="button"
             tabIndex={0}
@@ -181,7 +192,7 @@ export default function Home() {
           >
             <h2 className="text-2xl font-bold">🗂 Архив советов</h2>
             <span
-              className={`transform transition-transform duration-300 ${
+              className={`transform transition-transform duration-300 text-white ${
                 isArchiveOpen ? "rotate-90" : ""
               }`}
               aria-hidden="true"
@@ -191,9 +202,9 @@ export default function Home() {
           </div>
 
           {isArchiveOpen && (
-            <ul className="space-y-2 mt-4 max-h-96 overflow-auto">
+            <ul className="space-y-2 mt-4 max-h-96 overflow-auto text-white">
               {sortedTips.map((t, index) => (
-                <li key={index} className="border-b pb-2">
+                <li key={index} className="border-b border-gray-600 pb-2">
                   <strong>{t.title}</strong> — <em>{t.category}</em> ({t.date})
                 </li>
               ))}
@@ -201,24 +212,27 @@ export default function Home() {
           )}
         </section>
 
-        <section id="about" className="mt-16 max-w-2xl w-full text-center">
-          <h2 className="text-2xl font-bold mb-4">🤔 О проекте</h2>
-          <p className="text-gray-700">
+        <section id="about" className="mt-16 max-w-2xl w-full text-center z-10 relative">
+          <h2 className="text-2xl font-bold mb-4 text-white">🤔 О проекте</h2>
+          <p className="text-gray-300">
             Этот сайт создан для тех, кто любит узнавать новое, но не хочет тратить много времени. Каждый день — новый короткий совет, который можно прочитать за 1 минуту.
           </p>
         </section>
 
-        <section id="subscribe" className="mt-16 max-w-md w-full text-center">
-          <h2 className="text-2xl font-bold mb-4">📩 Подпишитесь на рассылку</h2>
+        <section
+          id="subscribe"
+          className="mt-16 max-w-md w-full text-center z-10 relative"
+        >
+          <h2 className="text-2xl font-bold mb-4 text-white">📩 Подпишитесь на рассылку</h2>
 
           <div className="mb-10">
-            <h3 className="font-semibold mb-2">Через Email (Formspree)</h3>
+            <h3 className="font-semibold mb-2 text-white">Через Email (Formspree)</h3>
             <form
               action="https://formspree.io/f/xjkwzgvv"
               method="POST"
               className="flex flex-col gap-4"
             >
-              <label htmlFor="email" className="text-left font-medium">Email</label>
+              <label htmlFor="email" className="text-left font-medium text-white">Email</label>
               <input
                 type="email"
                 name="email"
@@ -232,9 +246,9 @@ export default function Home() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-2">Через Telegram</h3>
+            <h3 className="font-semibold mb-2 text-white">Через Telegram</h3>
             <form onSubmit={handleTelegramSubmit} className="flex flex-col gap-4">
-              <label htmlFor="telegram_user" className="text-left font-medium">Telegram @username</label>
+              <label htmlFor="telegram_user" className="text-left font-medium text-white">Telegram @username</label>
               <input
                 type="text"
                 name="telegram_user"
