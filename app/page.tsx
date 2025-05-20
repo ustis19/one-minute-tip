@@ -64,6 +64,9 @@ export default function Home() {
   const tipIndex = tip ? sortedTips.findIndex(t => t.date === tip.date) : 0;
   const bgImage = `/images/tips/tip_${String(tipIndex + 1).padStart(2, "0")}.jpg`;
 
+  console.log("Текущий индекс совета:", tipIndex);
+  console.log("Фоновое изображение:", bgImage);
+
   const handleShowNextTip = () => {
     if (!tip || sortedTips.length === 0) return;
 
