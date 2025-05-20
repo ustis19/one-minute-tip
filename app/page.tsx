@@ -41,80 +41,32 @@ function AdBlock() {
 export default function Home() {
   const [tip, setTip] = useState<Tip | null>(null);
   const [sortedTips, setSortedTips] = useState<Tip[]>([]);
+  const [isArchiveOpen, setIsArchiveOpen] = useState(false);
 
   useEffect(() => {
-    // Сортируем советы по дате
     const sorted = [...tips].sort((a, b) => {
       const [dayA, monthA, yearA] = a.date.split('.').map(Number);
       const [dayB, monthB, yearB] = b.date.split('.').map(Number);
-      const dateA = new Date(yearA, monthA - 1, dayA);
-      const dateB = new Date(yearB, monthB - 1, dayB);
-      return dateA.getTime() - dateB.getTime();
+      return new Date(yearA, monthA - 1, dayA).getTime() - new Date(yearB, monthB - 1, dayB).getTime();
     });
-
     setSortedTips(sorted);
 
-    // Находим совет на сегодня
     const todayStr = new Date().toLocaleDateString("ru-RU");
     const todayTip = sorted.find(t => t.date === todayStr);
-
     setTip(todayTip || sorted[0]);
   }, []);
 
   const tipIndex = tip ? sortedTips.findIndex(t => t.date === tip.date) : 0;
   const bgImage = `/images/tips/tip_${String(tipIndex + 1).padStart(2, "0")}.jpg`;
 
-  console.log("Текущий индекс совета:", tipIndex);
-  console.log("Фоновое изображение:", bgImage);
-
   const handleShowNextTip = () => {
     if (!tip || sortedTips.length === 0) return;
-
     const currentIndex = sortedTips.findIndex(t => t.date === tip.date);
     const nextIndex = (currentIndex + 1) % sortedTips.length;
     setTip(sortedTips[nextIndex]);
   };
 
-  const handleTelegramSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    let username = (formData.get("telegram_user") as string).trim();
-
-    if (!username) {
-      alert("Пожалуйста, введите ваш Telegram username");
-      return;
-    }
-
-    if (!username.startsWith("@")) {
-      username = "@" + username;
-    }
-
-    const isValid = /^@?[a-zA-Z0-9_]{5,32}$/.test(username);
-    if (!isValid) {
-      alert("Некорректный username. Допустимы только буквы, цифры и подчёркивания (5–32 символа).");
-      return;
-    }
-
-    const token = "YOUR_TELEGRAM_BOT_TOKEN";
-    const chatId = "YOUR_TELEGRAM_CHAT_ID";
-    const text = `Новая подписка в Telegram: ${username}`;
-
-    try {
-      const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: chatId, text }),
-      });
-
-      if (!res.ok) throw new Error("Ошибка при отправке сообщения");
-
-      alert("Спасибо за подписку через Telegram!");
-      e.currentTarget.reset();
-    } catch (err) {
-      console.error(err);
-      alert("Не удалось отправить сообщение. Попробуйте позже.");
-    }
-  };
+  const toggleArchive = () => setIsArchiveOpen(prev => !prev);
 
   return (
     <div
@@ -176,14 +128,36 @@ export default function Home() {
         </Button>
 
         <section id="archive" className="mt-16 max-w-2xl w-full">
-          <h2 className="text-2xl font-bold mb-4">🗂 Архив советов</h2>
-          <ul className="space-y-2">
-            {sortedTips.map((t, index) => (
-              <li key={index} className="border-b pb-2">
-                <strong>{t.title}</strong> — <em>{t.category}</em> ({t.date})
-              </li>
-            ))}
-          </ul>
+          <div
+            onClick={toggleArchive}
+            className="flex cursor-pointer items-center justify-between border-b border-gray-300 pb-2"
+            aria-expanded={isArchiveOpen}
+            role="button"
+            tabIndex={0}
+            onKeyDown={e => {
+              if (e.key === "Enter" || e.key === " ") toggleArchive();
+            }}
+          >
+            <h2 className="text-2xl font-bold">🗂 Архив советов</h2>
+            <span
+              className={`transform transition-transform duration-300 ${
+                isArchiveOpen ? "rotate-90" : ""
+              }`}
+              aria-hidden="true"
+            >
+              ▶
+            </span>
+          </div>
+
+          {isArchiveOpen && (
+            <ul className="space-y-2 mt-4 max-h-96 overflow-auto">
+              {sortedTips.map((t, index) => (
+                <li key={index} className="border-b pb-2">
+                  <strong>{t.title}</strong> — <em>{t.category}</em> ({t.date})
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         <section id="about" className="mt-16 max-w-2xl w-full text-center">
