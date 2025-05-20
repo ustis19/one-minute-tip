@@ -20,8 +20,6 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-      aria-label="Переключить тему"
-      title="Переключить тему"
       className="fixed top-4 right-4 z-50 text-2xl p-2 bg-white/70 dark:bg-black/40 rounded-full shadow hover:scale-110 transition"
     >
       {theme === "light" ? "🌙" : "🌞"}
