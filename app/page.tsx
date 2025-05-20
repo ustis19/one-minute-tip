@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, FormEvent } from "react";
 import { motion } from "framer-motion";
-import { tips, Tip } from "../data/tips.ts"; // ← импорт из внешнего файла
+import { tips, Tip } from "../data/tips";
 
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <div className={`rounded-xl border bg-white p-4 shadow ${className}`}>{children}</div>;
@@ -46,6 +46,15 @@ export default function Home() {
     const todayTip = tips.find((t) => t.date === today);
     setTip(todayTip || tips[Math.floor(Math.random() * tips.length)]);
   }, []);
+
+  const handleShowAnotherTip = () => {
+    if (!tip) return;
+    let newTip: Tip | null = null;
+    do {
+      newTip = tips[Math.floor(Math.random() * tips.length)];
+    } while (newTip.title === tip.title);
+    setTip(newTip);
+  };
 
   const handleTelegramSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -127,10 +136,7 @@ export default function Home() {
         <Button
           className="mt-6"
           title="Показать случайный совет"
-          onClick={() => {
-            const randomTip = tips[Math.floor(Math.random() * tips.length)];
-            setTip(randomTip);
-          }}
+          onClick={handleShowAnotherTip}
         >
           🔄 Показать другой совет
         </Button>
